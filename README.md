@@ -1,4 +1,6 @@
 # static-site-s3-cloudfront
+![This project still in the works](https://img.shields.io/badge/Progress-Still_in_the_works-red)
+
 This repo is a template to help people set us static hosting using S3 and Cloudfront.  It also 
 has a GitHub Actions workflow that will deploy any changes to S3 on a push event and then it 
 will invalidate the Cloudfront cache so you can see the changes immediately.
