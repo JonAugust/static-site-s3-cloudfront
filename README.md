@@ -158,7 +158,7 @@ Now we'll set the environment variables in GitHub so the GitHub Actions Workflow
 
 ----
 
-Your GitHub Action is ready!  Now when you push the main branch to your repo, the workflow will trigger.  The first part 
+Your GitHub Action is ready!  Now when you push the main branch to your repo, the workflow will trigger.  The first job 
 of the workflow will sync the changes to your S3 bucket. When that has completed successfully, the second job will 
 invalidate your CloudFront distribution so you can see the changes immediately. You can monitor the progress of the 
 workflow by clicking on the Actions tab at the top of your repository.
