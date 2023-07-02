@@ -1,15 +1,9 @@
 # static-site-s3-cloudfront
-![This project is almost ready](https://img.shields.io/badge/Progress-Almost_There-orange)
+![This is so cool](https://img.shields.io/badge/Certified-Super_Cool-darkgreen)
 
 This repo is a template to help people set us static hosting using S3 and CloudFront.  It also 
 has a GitHub Actions workflow that will deploy any changes to S3 on a push event and then it 
 will invalidate the CloudFront cache so you can see the changes immediately.
-
-## TODO:
-- Explain how to set the environment variables
-
-## Future:
-- Make a version of this template that can build Hugo files
 
 # Setting this up on AWS:
 
@@ -168,3 +162,42 @@ Your GitHub Action is ready!  Now when you push the main branch to your repo, th
 of the workflow will sync the changes to your S3 bucket. When that has completed successfully, the second job will 
 invalidate your CloudFront distribution so you can see the changes immediately. You can monitor the progress of the 
 workflow by clicking on the Actions tab at the top of your repository.
+
+----
+## Pro-Tip: What is my site won't load index.html files from sub-folders?
+
+CloudFront will, by default, only load your default root object from the root of your bucket.  If you'd like CloudFront 
+to load an index from any folder, you'll need to make a CloudFront Function and add it to the Function Associations 
+section of your behavior under the behaviors tab.
+
+## Step 1: Make the Function
+1. Click on "Functions" from the CloudFront side menu.  Click "Create function".
+2. Name your function. I called mine: load-index-when-not-specified Then, click "Create Function".
+3. Replace the example Function code with the code below and click "Save changes".
+4. Click on the Publish tab and click "Publish function" to move it to production.
+
+```javascript
+function handler(event) {
+    var request = event.request;
+    var uri = request.uri;
+    
+    // Check whether the URI is missing a file name.
+    if (uri.endsWith('/')) {
+        request.uri += 'index.html';
+    } 
+    // Check whether the URI is missing a file extension.
+    else if (!uri.includes('.')) {
+        request.uri += '/index.html';
+    }
+
+    return request;
+}
+```
+## Step 2: Attach the Function to Your Distribution
+1. Go to CloudFront and click on your Distribution.
+2. Click on the Behaviors tab.
+3. Click on the default Behavior and then click "Edit".
+4. In the "Function Associations" section, set the "Function type" to "CloudFront Functions" and select the Function you just created in Step 1 for "Function ARN".
+5. Click "Save changes".
+
+This will trigger your Distribution to redploy which can take a few minutes.  Once that's complete, your site will load index.html from any folder.
