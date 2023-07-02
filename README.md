@@ -57,7 +57,7 @@ Now click on users on the left side and click "Add users".  I like to name the u
 - Check the box next to your policy and then click Next
 - Add any tags you may want to apply and then click "Create user"
 
-Now click the user you just created from the list of users.  Now we're going to make an access and secret key for the s3 bucket.
+3. Now click the user you just created from the list of users.  Now we're going to make an access and secret key for the s3 bucket.
 - Click on the Securty Credentials tab
 - Scroll a little bit until you see Access Keys.  Click "Create access key" and select "Application running outside AWS".  Click Next
 - Enter a tag if you'd like and then click "Create access key"
@@ -65,10 +65,10 @@ Now click the user you just created from the list of users.  Now we're going to 
 - Click Done.  You can continue if it warns you that you haven't viewed the secret key.
 
 
-3. Put a placeholder in the bucket.  I usually put an index.html in there with just "Hello!" in it.  You can use an S3 client like Transmit to move the file to the bucket using the keys from the last step.  Without a placeholder, we may have a problem with Cloudfront and Route 53 later.
+4. Put a placeholder in the bucket.  I usually put an index.html in there with just "Hello!" in it.  You can use an S3 client like Transmit to move the file to the bucket using the keys from the last step.  Without a placeholder, we may have a problem with Cloudfront and Route 53 later.
 
 
-4. Now we're going to make a Cloudfront distribution.  Go to Cloudfront.
+5. Now we're going to make a Cloudfront distribution.  Go to Cloudfront.
 - Click "Create distribution"
 - Click on the Origin domain box and select your s3 bucket from the list.
 - Under Origin access, click on Origin access control settings.  Then click on "Create control setting".  Leave the options as is and click Create.
@@ -99,12 +99,12 @@ Now click the user you just created from the list of users.  Now we're going to 
   - Click "Create distribution"
   - On the next screen you'll see a blue banner saying the bucket policy needs to be updated.  Click "Copy policy"
 
-5. Go to S3 and click on your bucket's name.
+6. Go to S3 and click on your bucket's name.
     - Go the the permissions tab.  Under Bucket policy, click "Edit" and paste the policy you copied in the last step
     - Click "Save changes" at the bottom right of the screen
 
 
-6. Now we need to point your FQDN to the Cloudfront distribution.  Go to Route 53 and click on "Hosted Zones".  Click on your domain to see your DNS records.
+7. Now we need to point your FQDN to the Cloudfront distribution.  Go to Route 53 and click on "Hosted Zones".  Click on your domain to see your DNS records.
     - If you have an existing record for your FQDN, you'll need to edit it.  Otherwise, click "Create record"
     - Add the host name to the domain to specify the FQDN.  Click the Alias slider and under "Route traffic to", select "Alias to Cloudfront distribution"
     - Then click on the box below that to select the Cloudfront distribution
