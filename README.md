@@ -164,7 +164,7 @@ invalidate your CloudFront distribution so you can see the changes immediately. 
 workflow by clicking on the Actions tab at the top of your repository.
 
 ----
-## Pro-Tip: What is my site won't load index.html files from sub-folders?
+## Pro-Tip: What if my site won't load index.html files from sub-folders?
 
 CloudFront will, by default, only load your default root object from the root of your bucket.  If you'd like CloudFront 
 to load an index from any folder, you'll need to make a CloudFront Function and add it to the Function Associations 
