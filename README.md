@@ -118,12 +118,12 @@ Add a placeholder file, such as index.html containing "Hello!" to your S3 bucket
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": "cloudfront:CreateInvalidation",
-            "Resource": "arn:aws:cloudfront::796616345680:distribution/ABCDEFGHIJKLMNO"
+            "Resource": "arn:aws:cloudfront::987654321:distribution/ABCDEFGHIJKLMNO"
         }
     ]
 }
 ```
-4. Replace the 'ABCDEFGHIJKLMNO' with the CloudFront Distribution you recorded from Step 6.
+4. Replace the 'ABCDEFGHIJKLMNO' with the CloudFront Distribution you recorded from Step 6. Replace the '987654321' with your AWS Account ID.
 5. Click Next and name your policy.  I like to name these like this:  hello.internection.com-CloudFront-Invalidation
 6. Add any tags you might want to apply, and then click "Create Policy"
 
