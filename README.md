@@ -1,9 +1,9 @@
 # static-site-s3-cloudfront
 ![This project is almost ready](https://img.shields.io/badge/Progress-Almost_There-orange)
 
-This repo is a template to help people set us static hosting using S3 and Cloudfront.  It also 
+This repo is a template to help people set us static hosting using S3 and CloudFront.  It also 
 has a GitHub Actions workflow that will deploy any changes to S3 on a push event and then it 
-will invalidate the Cloudfront cache so you can see the changes immediately.
+will invalidate the CloudFront cache so you can see the changes immediately.
 
 ## TODO:
 - Explain how to set the environment variables
@@ -77,12 +77,12 @@ Now we'll create a user and assign this policy to them:
 
 ## Step 4: Add a Placeholder to the Bucket
 
-Add a placeholder file, such as index.html containing "Hello!" to your S3 bucket. You can use an S3 client like Transmit to move the file to the bucket using the keys from Step 3. Without a placeholder, Cloudfront and Route 53 may encounter issues later.
+Add a placeholder file, such as index.html containing "Hello!" to your S3 bucket. You can use an S3 client like Transmit to move the file to the bucket using the keys from Step 3. Without a placeholder, CloudFront and Route 53 may encounter issues later.
 
 
-## Step 5: Create a Cloudfront Distribution
+## Step 5: Create a CloudFront Distribution
 
-1. Go to Cloudfront and click "Create distribution".
+1. Go to CloudFront and click "Create distribution".
 2. Under "Origin domain", select your S3 bucket.
 3. For "Origin access", click "Origin access control settings", then "Create control setting". Leave the options as they are and click "Create".
    - Don't worry about the bucket policy warning; we'll address it later.
@@ -91,27 +91,56 @@ Add a placeholder file, such as index.html containing "Hello!" to your S3 bucket
 6. In "Settings", add all the desired Fully Qualified Domain Names (FQDNs) for your site, such as: mysite.com, w<span>ww.</span>mysite.com, mysite.net, and w<span>ww.</span>mysite.net
 7. Click "Request certificate" under "Custom SSL certificate".
    - Select "DNS validation". AWS will add the validation records to your zone.
-   - Once the certificate is "Issued", return to the Cloudfront tab.
+   - Once the certificate is "Issued", return to the CloudFront tab.
 8. Select the certificate you created under "Custom SSL certificate". Click the refresh button if you don't see it.
 9. Enter your "Default root object" (typically "index.html").
 10. Click "Create distribution".
-11. On the next screen, click "Copy policy" to address the bucket policy warning.
-
+11. On the next screen, make note of your CloudFront Distribution ID.  You'll need this to grant invalidation permissions to your user.
+12. Then, click "Copy policy" from inside the bucket policy warning. 
 
 ## Step 6: Update S3 Bucket Policy
 
 1. Go to S3, click your bucket's name, and navigate to the "Permissions" tab.
-2. Under "Bucket policy", click "Edit" and paste the policy you copied from Cloudfront.
+2. Under "Bucket policy", click "Edit" and paste the policy you copied from CloudFront.
 3. Click "Save changes".
 
+## Step 7: Create an Invalidation Policy
 
-## Step 7: Point FQDN to Cloudfront
+1. Go to IAM and click on "Policies".
+2. Click "Create Policy".
+3. Select JSON and replace all the existing JSON with the following (replace the resources with your own bucket ARN):
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "cloudfront:CreateInvalidation",
+            "Resource": "arn:aws:cloudfront::796616345680:distribution/ABCDEFGHIJKLMNO"
+        }
+    ]
+}
+```
+4. Replace the 'ABCDEFGHIJKLMNO' with the CloudFront Distribution you recorded from Step 6.
+5. Click Next and name your policy.  I like to name these like this:  hello.internection.com-CloudFront-Invalidation
+6. Add any tags you might want to apply, and then click "Create Policy"
+
+## Step 8: Attach the Invalidation Policy to the User
+1. Click "Users" on the left sidebar and click on your S3 user.
+2. Click "Add Permissions" and select "Add Permissions"
+3. Select "Attach policies directly", and find the Invalidation Policy you just created.
+4. Check the box next to your policy and click "Next".
+5. Click "Add Permission".
+
+## Step 9: Point FQDN to CloudFront
 
 1. Go to Route 53, click "Hosted Zones", then click your domain.
 2. Edit or create a record for your FQDN.
    - Enter your hostname next to the domain to specify the FQDN.
-   - Click the Alias slider, and select "Alias to Cloudfront distribution" under "Route traffic to".
-3. Click on the box below that to select the Cloudfront distribution you created in Step 5
+   - Click the Alias slider, and select "Alias to CloudFront distribution" under "Route traffic to".
+3. Click on the box below that to select the CloudFront distribution you created in Step 5
 4. Leave the other options alone and click "Create records"
 
 Now you should be able to visit the FQDN and see the placeholder. If you encounter issues, review these settings, paying special attention to the "Default root object".
