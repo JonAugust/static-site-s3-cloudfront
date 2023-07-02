@@ -27,7 +27,7 @@ First, we'll create a policy that allows a user to access the bucket.
 
 1. Go to IAM and click on "Policies".
 2. Click "Create Policy".
-3. Select JSON and replace all the existing JSON with the following:
+3. Select JSON and replace all the existing JSON with the following (replace the resources with your own bucket ARN):
 
 
 ```json
