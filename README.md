@@ -6,7 +6,6 @@ has a GitHub Actions workflow that will deploy any changes to S3 on a push event
 will invalidate the Cloudfront cache so you can see the changes immediately.
 
 ## TODO:
-- Explain how to set up S3 and Cloudfront
 - Explain how to set the environment variables
 
 ## Future:
@@ -16,14 +15,22 @@ will invalidate the Cloudfront cache so you can see the changes immediately.
 
 These instructions assume you have an AWS account and your domain is hosted in Route 53.  Let me know if you'd like details on moving your domain to Route 53 and I'll write up some instructions for that too.
 
-1. Go to S3.  Create a bucket.  Enter a name for the bucket.  I like to name the bucket after the hostname of the site.  Leave all the other options alone and click Create Bucket.
+## Step 1: Create a Bucket in S3
+
+1. Go to S3 and click on "Create a bucket".
+2. Enter a name for the bucket. I recommend using the hostname of your site.
+3. Leave all other options as is, and click "Create Bucket".
+
+## Step 2: Create an IAM Policy and User
+
+First, we'll create a policy that allows a user to access the bucket.
+
+1. Go to IAM and click on "Policies".
+2. Click "Create Policy".
+3. Select JSON and replace all the existing JSON with the following:
 
 
-2. We're going to create a user, but first we need to create a policy for the user so it can only access this bucket.  Go to IAM and click on Policies.
-    - Then click "Create Policy"
-    - select JSON and replace all the existing JSON with this:
-
-```
+```json
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -47,67 +54,64 @@ These instructions assume you have an AWS account and your domain is hosted in R
 }
 ```
 
-- Click Next and name your policy.  I like to name these like this:  hello.internection.com-GitHub-Actions-Sync
-- Add any tags you might want to apply, and then click "Create Policy"
+4. Click Next and name your policy.  I like to name these like this:  hello.internection.com-GitHub-Actions-Sync
+5. Add any tags you might want to apply, and then click "Create Policy"
 
-Now click on users on the left side and click "Add users".  I like to name the users something similar to the site:  helloinxn
-- Click Next
-- Select "Attach policies directly"
-- Locate the policy you just created in the list.  The search is helpful for this.
-- Check the box next to your policy and then click Next
-- Add any tags you may want to apply and then click "Create user"
+Now we'll create a user and assign this policy to them:
 
-3. Now click the user you just created from the list of users.  Now we're going to make an access and secret key for the s3 bucket.
-- Click on the Securty Credentials tab
-- Scroll a little bit until you see Access Keys.  Click "Create access key" and select "Application running outside AWS".  Click Next
-- Enter a tag if you'd like and then click "Create access key"
-- Make sure you copy each of the keys using the overlapping squares icon and store them in a safe place for now.
-- Click Done.  You can continue if it warns you that you haven't viewed the secret key.
+1. Click "Users" on the left sidebar and click "Add users".
+2. Enter a user name, like helloinxn.
+3. Click "Next", select "Attach policies directly", and find the policy you just created.
+4. Check the box next to your policy, add any tags you'd like, and click "Next".
+5. Click "Create user".
 
+## Step 3: Generate Access Keys
 
-4. Put a placeholder in the bucket.  I usually put an index.html in there with just "Hello!" in it.  You can use an S3 client like Transmit to move the file to the bucket using the keys from the last step.  Without a placeholder, we may have a problem with Cloudfront and Route 53 later.
-
-
-5. Now we're going to make a Cloudfront distribution.  Go to Cloudfront.
-- Click "Create distribution"
-- Click on the Origin domain box and select your s3 bucket from the list.
-- Under Origin access, click on Origin access control settings.  Then click on "Create control setting".  Leave the options as is and click Create.
-      
-  - You'll see a warning about applying a bucket policy.  Don't worry, we'll handle that in a minute.
-- Leave all the settings in "Origin" and "Default cache behavior" as they are except "Viewer protocol policy".  Change that to "Redirect HTTP to HTTPS"
-  - Leave the settings in "Function associations" alone.
-  - Under "Web Application Firewall (WAF)" click "Do not enable security protections" unless you want to pay for WAF
-  - In Settings, click Add item to add all the various FQDNs you'd want this site to have.  For example:
-      - mysite.com
-      - www.mysite.com
-      - mysite.net
-      - www.mysite.net
-      
-      If you have only one FQDN, enter just that one here.
-  - Click "Request certificate" Under Custom SSL certificate.
-      - Click Next when you see "Request a public certificate"
-      - Enter the main FQDN in the box for Fully Qualified Domain Name
-      - Click "Add another name to this certificate" for all the names you added in the last step.
-      - Select DNS validation.  AWS will add the validation records to your zone for you.
-      - Add any tags you might want and then click Request.
-      - On the next screen click the refresh button to see your Pending Certificate.  Click on the certificate ID to see the details about validation.
-          - Click "Create records in Route 53".  And then click "Create records" on the next screen
-          - Got back to Certificates screen and wait patiently.  You can click refresh to update the status.
-          - It should only take a few minutes.  Once the certificate is "Issued" we can got back to the Cloudfront tab.  Don't worry that the certificate says "Inelligible".  It'll become eligible once it's tied to a service like Cloudfront.
-  - Now you can select the certificate you created under "Custom SSL certificate".  You might need to click the refresh icon if you don't see it in the list
-  - Enter your "Default root object" - typically, this is "index.html"
-  - Click "Create distribution"
-  - On the next screen you'll see a blue banner saying the bucket policy needs to be updated.  Click "Copy policy"
-
-6. Go to S3 and click on your bucket's name.
-    - Go the the permissions tab.  Under Bucket policy, click "Edit" and paste the policy you copied in the last step
-    - Click "Save changes" at the bottom right of the screen
+1. Click the user you just created from the list.
+2. Click the "Security Credentials" tab and find the "Access Keys" section.
+3. Click "Create access key", select "Application running outside AWS", and click "Next".
+4. Enter a tag if you'd like, then click "Create access key".
+5. Copy both keys and store them securely.
+6. Click "Done".
 
 
-7. Now we need to point your FQDN to the Cloudfront distribution.  Go to Route 53 and click on "Hosted Zones".  Click on your domain to see your DNS records.
-    - If you have an existing record for your FQDN, you'll need to edit it.  Otherwise, click "Create record"
-    - Add the host name to the domain to specify the FQDN.  Click the Alias slider and under "Route traffic to", select "Alias to Cloudfront distribution"
-    - Then click on the box below that to select the Cloudfront distribution
-    - Leave the other options alone and click "Create records"
+## Step 4: Add a Placeholder to the Bucket
 
-Now you should be able to visit the FQDN and see the placeholder. On a couple of occasions, I've seen the "Default root object" not set once I've completed these steps.  If you have any problems, I recommend reviewing all these settings, especially that one.
+Add a placeholder file, such as index.html containing "Hello!" to your S3 bucket. You can use an S3 client like Transmit to move the file to the bucket using the keys from Step 3. Without a placeholder, Cloudfront and Route 53 may encounter issues later.
+
+
+## Step 5: Create a Cloudfront Distribution
+
+1. Go to Cloudfront and click "Create distribution".
+2. Under "Origin domain", select your S3 bucket.
+3. For "Origin access", click "Origin access control settings", then "Create control setting". Leave the options as they are and click "Create".
+   - Don't worry about the bucket policy warning; we'll address it later.
+4. Set "Viewer protocol policy" to "Redirect HTTP to HTTPS" and leave all other settings as is.
+5. For "Web Application Firewall (WAF)", choose "Do not enable security protections" unless you plan to use WAF.
+6. In "Settings", add all the desired Fully Qualified Domain Names (FQDNs) for your site, such as: mysite.com, w<span>ww.</span>mysite.com, mysite.net, and w<span>ww.</span>mysite.net
+7. Click "Request certificate" under "Custom SSL certificate".
+   - Select "DNS validation". AWS will add the validation records to your zone.
+   - Once the certificate is "Issued", return to the Cloudfront tab.
+8. Select the certificate you created under "Custom SSL certificate". Click the refresh button if you don't see it.
+9. Enter your "Default root object" (typically "index.html").
+10. Click "Create distribution".
+11. On the next screen, click "Copy policy" to address the bucket policy warning.
+
+
+## Step 6: Update S3 Bucket Policy
+
+1. Go to S3, click your bucket's name, and navigate to the "Permissions" tab.
+2. Under "Bucket policy", click "Edit" and paste the policy you copied from Cloudfront.
+3. Click "Save changes".
+
+
+## Step 7: Point FQDN to Cloudfront
+
+1. Go to Route 53, click "Hosted Zones", then click your domain.
+2. Edit or create a record for your FQDN.
+   - Enter your hostname next to the domain to specify the FQDN.
+   - Click the Alias slider, and select "Alias to Cloudfront distribution" under "Route traffic to".
+3. Click on the box below that to select the Cloudfront distribution you created in Step 5
+4. Leave the other options alone and click "Create records"
+
+Now you should be able to visit the FQDN and see the placeholder. If you encounter issues, review these settings, paying special attention to the "Default root object".
