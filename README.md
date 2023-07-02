@@ -144,3 +144,27 @@ Add a placeholder file, such as index.html containing "Hello!" to your S3 bucket
 4. Leave the other options alone and click "Create records"
 
 Now you should be able to visit the FQDN and see the placeholder. If you encounter issues, review these settings, paying special attention to the "Default root object".
+
+Now we'll set the environment variables in GitHub so the GitHub Actions Workflow can sync your changes to S3 upon a push event.
+
+----
+# Setting up GitHub for your Workflow
+1. Go to the GitHub repository you'll be syncing to your S3 / CloudFront instance. Click on the Settings Tab at the top.
+2. Click on "Secrets and Variables" and then "Actions"
+3. For each of the variables below, you'll click on the green "New repository secret" button. Enter the name and the secret for each and then click "Add secret"
+   -  Be sure to replace the dummy values with your own
+
+| Name                       | Sample Value                        | Note                                          |
+|----------------------------|-------------------------------------|-----------------------------------------------|
+| AWS_ACCESS_KEY_ID          | JQ469BPXZN31                        | Created in Step 3 of "Setting this up on AWS" |
+| AWS_SECRET_ACCESS_KEY      | PZd4w6CMYA6ssnj4+WDUp+8gbXEJFhBVqQG | Created in Step 3 of "Setting this up on AWS" |
+| AWS_S3_BUCKET              | static.mysite.com                   | Use the name of your bucket                   |
+| AWS_REGION                 | us-east-1                           | Use your AWS region                           |
+| CLOUDFRONT_DISTRIBUTION_ID | XXXXXXXXXXXXX                       | Noted in Step 5 of "Setting this up on AWS"   |
+
+----
+
+Your GitHub Action is ready!  Now when you push the main branch to your repo, the workflow will trigger.  The first part 
+of the workflow will sync the changes to your S3 bucket. When that has completed successfully, the second job will 
+invalidate your CloudFront distribution so you can see the changes immediately. You can monitor the progress of the 
+workflow by clicking on the Actions tab at the top of your repository.
