@@ -168,7 +168,7 @@ workflow by clicking on the Actions tab at the top of your repository.
 
 CloudFront will, by default, only load your default root object from the root of your bucket.  If you'd like CloudFront 
 to load an index from any folder, you'll need to make a CloudFront Function and add it to the Function Associations 
-section of your behavior under the behaviors tab.
+section of your Behavior under the Behaviors tab in the Distribution.
 
 ## Step 1: Make the Function
 1. Click on "Functions" from the CloudFront side menu.  Click "Create function".
