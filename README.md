@@ -5,6 +5,9 @@ This repo is a template to help people set us static hosting using S3 and CloudF
 has a GitHub Actions workflow that will deploy any changes to S3 on a push event and then it 
 will invalidate the CloudFront cache so you can see the changes immediately.
 
+NOTE: The Actions workflow is a mixture of yaml from different sources plus some tinkering of my own.  If I owe you 
+credit, please feel free to let me know and I'll add attribution.  Apologies for not keeping track.
+
 # Setting this up on AWS:
 
 These instructions assume you have an AWS account and your domain is hosted in Route 53.  Let me know if you'd like details on moving your domain to Route 53 and I'll write up some instructions for that too.
