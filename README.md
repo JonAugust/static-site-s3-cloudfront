@@ -157,7 +157,7 @@ Now we'll set the environment variables in GitHub so the GitHub Actions Workflow
 | AWS_SECRET_ACCESS_KEY      | PZd4w6CMYA6ssnj4+WDUp+8gbXEJFhBVqQG | Created in Step 3 of "Setting this up on AWS" |
 | AWS_S3_BUCKET              | static.mysite.com                   | Use the name of your bucket                   |
 | AWS_REGION                 | us-east-1                           | Use your AWS region                           |
-| CLOUDFRONT_DISTRIBUTION_ID | XXXXXXXXXXXXX                       | Noted in Step 5 of "Setting this up on AWS"   |
+| CLOUDFRONT_DISTRIBUTION_ID | EDJT3928DJGS3B                      | Noted in Step 5 of "Setting this up on AWS"   |
 
 ----
 
